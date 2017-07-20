@@ -15,14 +15,18 @@ echo "$DEPS_DIR/$DEPS_IDX/share/gdal" > $DEPS_DIR/$DEPS_IDX/env/GDAL_DATA
 echo "$DEPS_DIR/$DEPS_IDX/share/proj" > $DEPS_DIR/$DEPS_IDX/env/PROJ_LIB
 
 mkdir -p $DEPS_DIR/$DEPS_IDX/profile.d
-echo "export PROJ_LIB=\$DEPS_DIR/$DEPS_IDX/share/proj" > $DEPS_DIR/$DEPS_IDX/profile.d/cfgeo.sh
+echo "export PROJ_LIB=\$DEPS_DIR/$DEPS_IDX/share/proj; export LIBRARY_PATH=\$LD_LIBRARY_PATH; env" > $DEPS_DIR/$DEPS_IDX/profile.d/cfgeo.sh
 
 
 echo "Grabbing vendored libs..."
-tar -zvxf $BUILDPACK_DIR/vendorlibs.0.0.1.cflinuxfs2.x86_64.tar.gz -C $DEPS_DIR/$DEPS_IDX
+tar -zxf $BUILDPACK_DIR/vendorlibs.0.0.1.cflinuxfs2.x86_64.tar.gz -C $DEPS_DIR/$DEPS_IDX
 
 export PATH=$DEPS_DIR/$DEPS_IDX/bin:$PATH
-export LD_LIBRARY_PATH=$DEPS_DIR/$DEPS_IDX/lib:$LD_LIBRARY_PATH
+if [ -z "${LD_LIBRARY_PATH:-}" ]; then
+  export LD_LIBRARY_PATH=$DEPS_DIR/$DEPS_IDX/lib
+else
+  export LD_LIBRARY_PATH=$DEPS_DIR/$DEPS_IDX/lib:$LD_LIBRARY_PATH
+fi
 export GDAL_DATA=$DEPS_DIR/$DEPS_IDX/share/gdal
 export PROJ_LIB=$DEPS_DIR/$DEPS_IDX/share/proj
 
